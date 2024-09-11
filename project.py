@@ -2,17 +2,16 @@ import random
 import string
 
 # Open the file and read the words
-f = open("C:\\Users\\Frank\\Desktop\\wordle project\\words.txt", "r")
-allText = f.read()
-words = list(map(str, allText.split()))
+with open("C:\\Users\\Frank\\Desktop\\wordle project\\words.txt", "r") as f:
+    allText = f.read()
+    words = list(map(str, allText.split()))
 
 # Choose a random word from the list
 wordto = random.choice(words)
 
 # Print the alphabet from a to z using lowercase ASCII letters.
 print("Alphabet from a-z:")
-for letter in string.ascii_lowercase:
-    print(letter, end=" ")
+print(" ".join(string.ascii_lowercase))
 
 # Function to provide feedback on the guessed word
 def check_guess(guess, wordto):
@@ -23,30 +22,29 @@ def check_guess(guess, wordto):
         elif guess[i] in wordto:
             feedback.append(f"{guess[i]}: Wrong position")
         else:
-            feedback.append(f"{guess[i]}: Not in word")
+            feedback.append(f"{guess[i]}: Not in word /n /n /n")
     return feedback
 
-# Input for guessing the word
-guess = input("\nGuess a word: ")
-
-# Check if the input is more than 5 characters
-if len(guess) > 5:
-    print("Error! Only 5 characters allowed!")
-else:
-    # Convert all letters to lowercase and ensure the guess contains only letters
-    if guess.isalpha():
+# Function to handle a single guess
+def handle_guess(guess, wordto):
+    if len(guess) > 5:
+        print("Error! Only 5 characters allowed!")
+        return False
+    elif not guess.isalpha():
+        print("Error! Only alphabetic characters are allowed.")
+        return False
+    else:
         guess = guess.lower()
-        print(f"Your processed guess is: {guess}")
-
-        # Convert guess and wordto to lists and print them
-        guess_list = list(guess)
-        wordto_list = list(wordto)
-
-        print(f"The randomly chosen word is: {''.join(wordto_list)}")
-
-        # Provide feedback on the guess
         feedback = check_guess(guess, wordto)
         for f in feedback:
             print(f)
-    else:
-        print("Error! Only alphabetic characters are allowed.")
+        return guess == wordto
+
+# Loop to allow multiple guesses (5 in this case)
+for attempt in range(1, 6):
+    guess = input(f"\nGuess {attempt} (You have {6 - attempt} attempts left): ")
+    if handle_guess(guess, wordto):
+        print("You win!")
+        break
+else:
+    print(f"Game over! The correct word was: {wordto}")
